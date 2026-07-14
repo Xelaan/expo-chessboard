@@ -1,6 +1,6 @@
 {
-  "name": "@og-nav/expo-chessboard",
-  "version": "0.1.0",
+  "name": "@crewbeat/expo-chessboard",
+  "version": "0.1.1",
   "description": "Animated, customizable chessboard for React Native + Expo",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -33,14 +33,17 @@
     "reanimated"
   ],
   "license": "MIT",
-  "author": "og-nav",
-  "homepage": "https://github.com/og-nav/expo-chessboard#readme",
+  "author": "Xelaan",
+  "contributors": [
+    "og-nav (original author)"
+  ],
+  "homepage": "https://github.com/Xelaan/expo-chessboard#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/og-nav/expo-chessboard.git"
+    "url": "git+https://github.com/Xelaan/expo-chessboard.git"
   },
   "bugs": {
-    "url": "https://github.com/og-nav/expo-chessboard/issues"
+    "url": "https://github.com/Xelaan/expo-chessboard/issues"
   },
   "sideEffects": false,
   "peerDependencies": {

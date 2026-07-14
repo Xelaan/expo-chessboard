@@ -1,7 +1,13 @@
 # Changelog
 
-All notable changes to `@og-nav/expo-chessboard` are documented here.
+All notable changes to `@crewbeat/expo-chessboard` are documented here.
 This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## 0.1.1 — Fork release
+
+Republished under the `@crewbeat` scope from the `Xelaan/expo-chessboard`
+fork. No code changes from 0.1.0 — only package name, repository
+metadata, and documentation. Original library by og-nav.
 
 ## 0.1.0 — Initial release
 

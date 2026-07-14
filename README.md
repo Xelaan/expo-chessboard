@@ -1,4 +1,4 @@
-# @og-nav/expo-chessboard
+# @crewbeat/expo-chessboard
 
 Animated, customizable chessboard for React Native + Expo. Single-gesture
 drag-and-drop, smooth piece reconciliation across moves (including
@@ -7,7 +7,7 @@ and a deep customization surface — all built on Reanimated, Gesture
 Handler, and `chess.ts`.
 
 ```tsx
-import { Chessboard } from "@og-nav/expo-chessboard";
+import { Chessboard } from "@crewbeat/expo-chessboard";
 
 <Chessboard fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" boardSize={360} />
 ```
@@ -15,11 +15,11 @@ import { Chessboard } from "@og-nav/expo-chessboard";
 ## Install
 
 ```sh
-npm install @og-nav/expo-chessboard
+npm install @crewbeat/expo-chessboard
 # or
-pnpm add @og-nav/expo-chessboard
+pnpm add @crewbeat/expo-chessboard
 # or
-yarn add @og-nav/expo-chessboard
+yarn add @crewbeat/expo-chessboard
 ```
 
 Then install the peer dependencies in your Expo app:
@@ -52,7 +52,7 @@ The simplest way to drop a board into a screen. The board owns its
 own internal `Chess` instance and the consumer just listens for moves.
 
 ```tsx
-import { Chessboard, type Move } from "@og-nav/expo-chessboard";
+import { Chessboard, type Move } from "@crewbeat/expo-chessboard";
 
 export function PlayScreen() {
   return (
@@ -75,7 +75,7 @@ For analysis tools, engine integration, or anything that needs to
 share a `Chess` instance across the board and other UI.
 
 ```tsx
-import { Chessboard, type ChessboardRef } from "@og-nav/expo-chessboard";
+import { Chessboard, type ChessboardRef } from "@crewbeat/expo-chessboard";
 import { Chess } from "chess.ts";
 import { useMemo, useRef } from "react";
 
@@ -119,7 +119,7 @@ Four named palettes ship with the package. They are plain `BoardColors`
 constants you pass to the existing `colors` prop.
 
 ```tsx
-import { Chessboard, THEME_WOOD, THEME_BLUE, THEME_GREEN } from "@og-nav/expo-chessboard";
+import { Chessboard, THEME_WOOD, THEME_BLUE, THEME_GREEN } from "@crewbeat/expo-chessboard";
 
 <Chessboard boardSize={360} colors={THEME_WOOD} />
 ```
@@ -146,7 +146,7 @@ Two ways to override the bundled PNG piece set:
 // 2. Full custom renderer — return any React element. Useful for
 // SVGs, unicode glyphs, or animated piece art.
 import { Text } from "react-native";
-import type { PieceType } from "@og-nav/expo-chessboard";
+import type { PieceType } from "@crewbeat/expo-chessboard";
 
 const UNICODE: Record<PieceType, string> = {
   wk: "♔", wq: "♕", wr: "♖", wb: "♗", wn: "♘", wp: "♙",
@@ -315,7 +315,7 @@ Xcode or Android Studio.
 2. Clone the repo and install dependencies:
 
    ```sh
-   git clone https://github.com/og-nav/expo-chessboard.git
+   git clone https://github.com/Xelaan/expo-chessboard.git
    cd expo-chessboard
    pnpm install
    pnpm build           # builds the library into dist/
@@ -346,4 +346,4 @@ ready-to-copy form.
 
 ## License
 
-MIT © og-nav. See [LICENSE](./LICENSE).
+MIT © og-nav. Fork maintained by Xelaan. See [LICENSE](./LICENSE).
