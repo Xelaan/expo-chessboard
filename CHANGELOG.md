@@ -3,6 +3,17 @@
 All notable changes to `@crewbeat/expo-chessboard` are documented here.
 This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.1.2 — Pre-compiled worklets (bug fix)
+
+Fixes boards rendering **read-only** in consumer apps. The previous build
+used `tsc` only, which left Reanimated `"worklet"` directives untransformed,
+so gesture callbacks and `useAnimatedStyle` animations never ran on the UI
+thread. The library now compiles its JS with Babel + `react-native-worklets/plugin`
+(tsc still emits the type declarations), so `dist/` ships fully-formed
+worklets — the same way gesture-handler and reanimated package theirs. Worklets
+are compiled against `react-native-worklets` 0.10 / Reanimated 4 to match
+current Expo SDK 56 apps. No API changes.
+
 ## 0.1.1 — Fork release
 
 Republished under the `@crewbeat` scope from the `Xelaan/expo-chessboard`
