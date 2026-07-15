@@ -1,6 +1,6 @@
 {
   "name": "@crewbeat/expo-chessboard",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Animated, customizable chessboard for React Native + Expo",
   "main": "dist/index.js",
   "module": "dist/index.js",
