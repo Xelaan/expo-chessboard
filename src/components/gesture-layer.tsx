@@ -1,5 +1,4 @@
 import React, { useCallback } from "react";
-import { StyleSheet } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { runOnJS, useSharedValue } from "react-native-reanimated";
 import type { SharedValue } from "react-native-reanimated";
@@ -202,10 +201,20 @@ export default function GestureLayer({
   return (
     <GestureDetector gesture={gesture}>
       <Animated.View
-        style={[
-          StyleSheet.absoluteFillObject,
-          { backgroundColor: "transparent" },
-        ]}
+        // Explicit frame instead of StyleSheet.absoluteFillObject: on
+        // Reanimated 4.4+ an Animated.View styled with only absolute-fill
+        // constraints can collapse to zero height (observed with Reanimated
+        // 4.5 / RN 0.85 New Architecture), leaving the board with no hittable
+        // gesture surface — the board renders but is completely unresponsive.
+        // Explicit width/height is robust across Reanimated versions.
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: boardSize,
+          height: boardSize,
+          backgroundColor: "transparent",
+        }}
       />
     </GestureDetector>
   );
