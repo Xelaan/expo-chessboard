@@ -22,7 +22,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
-    "test": "jest --passWithNoTests"
+    "test": "jest --passWithNoTests",
+    "release": "npm version patch && git push --follow-tags"
   },
   "keywords": [
     "react-native",
