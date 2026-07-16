@@ -3,7 +3,8 @@
 Animated, customizable chessboard for React Native + Expo. Single-gesture
 drag-and-drop, smooth piece reconciliation across moves (including
 castling, en passant, and promotion), premoves, move-history scrubbing,
-and a deep customization surface — all built on Reanimated, Gesture
+animated game-over badges (checkmate, draws, resignation, timeout), and
+a deep customization surface — all built on Reanimated, Gesture
 Handler, and `chess.ts`.
 
 ```tsx
@@ -128,6 +129,25 @@ import { Chessboard, THEME_WOOD, THEME_BLUE, THEME_GREEN } from "@crewbeat/expo-
 Pass a `Partial<BoardColors>` to override individual colors of any
 theme.
 
+### Background image
+
+`backgroundImage` renders an image (wood grain, marble, anything
+`<Image>` accepts) underneath the board cells, stretched to cover the
+board. The cells paint on top of it, so give the cell colors alpha
+values to let the texture show through — with fully opaque colors the
+image stays invisible:
+
+```tsx
+<Chessboard
+  boardSize={360}
+  backgroundImage={require("./assets/wood.jpg")}
+  colors={{
+    light: "rgba(240, 217, 181, 0.55)",
+    dark: "rgba(181, 136, 99, 0.55)",
+  }}
+/>
+```
+
 ## Custom pieces
 
 Two ways to override the bundled PNG piece set:
@@ -233,6 +253,44 @@ Making any new move while at an index below the head clears the redo
 stack — that's the "you've created a new branch" event. v0.2 will
 turn that into a tree node instead of an erase.
 
+## Game-over animation
+
+When the game ends, an animation plays on the king cells: a colored
+overlay pops over each relevant king with a label pill
+("Checkmate", "Winner", "Draw", …), holds for a beat, then settles into
+a small circular corner badge that persists until the position (or the
+`gameResult` prop) changes.
+
+Checkmate, stalemate, and drawn positions (insufficient material,
+50-move rule, threefold repetition) are detected automatically from the
+position — undoing past the final move clears the badges, redoing
+replays the animation.
+
+Endings that don't live in the position are declared via the
+`gameResult` prop:
+
+```tsx
+// White wins on time:
+<Chessboard chess={chess} boardSize={360}
+  gameResult={{ reason: "timeout", winner: "w" }} />
+
+// Black resigns:
+<Chessboard chess={chess} boardSize={360}
+  gameResult={{ reason: "resign", winner: "w" }} />
+
+// Draw by agreement:
+<Chessboard chess={chess} boardSize={360} gameResult={{ reason: "draw" }} />
+```
+
+Decisive reasons (`"checkmate"`, `"resign"`, `"timeout"`, `"abandon"`)
+put the reason badge on the losing king (fallen king / flag / clock / ✕)
+and a crown badge on the winner. `"stalemate"` and `"draw"` put a ½
+badge on both kings. Pass `gameResult={null}` to suppress the animation
+while keeping auto-detection off, `gameOverAnimationEnabled={false}` to
+turn the feature off entirely, and `gameOverLabels` to localize the
+pill text. Badge colors come from `colors.gameOverLoser`,
+`colors.gameOverWinner`, and `colors.gameOverDraw`.
+
 ## Props
 
 | Prop | Type | Default | Description |
@@ -243,6 +301,7 @@ turn that into a tree node instead of an erase.
 | `boardOrientation` | `"white" \| "black"` | `"white"` | Visual orientation only. |
 | `playerSide` | `"white" \| "black" \| "both"` | `"both"` | Which side the local user can move. |
 | `colors` | `Partial<BoardColors>` | `DEFAULT_COLORS` | Palette overrides. Pass a theme constant or a partial object. |
+| `backgroundImage` | `ImageSourcePropType` | — | Image rendered under the board cells (textures). Use rgba cell colors to let it show through. |
 | `pieces` | `Partial<Record<PieceType, ImageSourcePropType>>` | bundled PNGs | Per-piece image overrides. |
 | `renderPiece` | `(piece, size) => ReactElement \| null` | — | Full custom piece renderer. Overrides `pieces`. |
 | `showCoordinates` | `boolean` | `true` | Show file/rank labels in the corners. |
@@ -250,10 +309,13 @@ turn that into a tree node instead of an erase.
 | `highlightedSquares` | `SquareHighlight[]` | — | Read-only ring/fill overlays. |
 | `arrows` | `Arrow[]` | — | Read-only SVG arrow overlays. |
 | `gestureEnabled` | `boolean` | `true` | Disable all interaction. |
-| `animationDuration` | `number` | 200 | Piece-slide duration in ms. |
+| `animationDuration` | `number` | 150 | Piece-slide duration in ms. |
 | `soundEnabled` | `boolean` | `true` | Play move/capture/game-over sounds. |
 | `hapticsEnabled` | `boolean` | `true` | Trigger haptics on moves. |
 | `premovesEnabled` | `boolean` | `false` | Queue moves on opponent's turn. |
+| `gameOverAnimationEnabled` | `boolean` | `true` | King-cell badge animation when the game ends (checkmate, stalemate, draw, resign, timeout, abandon). |
+| `gameOverLabels` | `GameOverLabels` | `"Checkmate"`, `"Winner"`, … | Localization overrides for the game-over pills. |
+| `gameResult` | `GameResult \| null` | `undefined` | Consumer-declared ending (`{ reason, winner? }`) for results not derivable from the position — resign, timeout, abandon. `undefined` auto-detects checkmate/stalemate/draw; `null` suppresses the animation. |
 | `onMove` | `(move: Move) => void` | — | Fires after every successful move (gesture, programmatic, or premove auto-apply). |
 | `onSquarePress` | `(square: Square) => void` | — | Fires on any tap that does not result in a move or selection. |
 
@@ -272,6 +334,7 @@ interface ChessboardRef {
   redo(): void;
   goToMoveIndex(n: number): void;
   getMoveIndex(): number;
+  getMoveCount(): number;
   getHistory(): Move[];
   canUndo(): boolean;
   canRedo(): boolean;

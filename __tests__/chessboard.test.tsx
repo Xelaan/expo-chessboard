@@ -27,6 +27,21 @@ describe("Chessboard mounting", () => {
     ).not.toThrow();
   });
 
+  test("renders with a background image and translucent cell colors", () => {
+    expect(() =>
+      render(
+        <Chessboard
+          boardSize={320}
+          backgroundImage={{ uri: "https://example.com/wood.png" }}
+          colors={{
+            light: "rgba(240, 217, 181, 0.6)",
+            dark: "rgba(181, 136, 99, 0.6)",
+          }}
+        />
+      )
+    ).not.toThrow();
+  });
+
   test("renders with all custom props enabled", () => {
     expect(() =>
       render(
@@ -295,6 +310,138 @@ describe("Chessboard ref API — reset clears redo stack", () => {
     });
     expect(ref.current?.canRedo()).toBe(false);
     expect(ref.current?.getMoveCount()).toBe(0);
+  });
+});
+
+describe("Chessboard game-over animation", () => {
+  // Fool's mate: 1.f3 e5 2.g4 Qh4# — white is checkmated.
+  const FOOLS_MATE_FEN =
+    "rnb1kbnr/pppp1ppp/8/4p3/6Pq/5P2/PPPPP2P/RNBQKBNR w KQkq - 1 3";
+
+  test("mounting on a checkmate position shows both badges", () => {
+    const chess = new Chess(FOOLS_MATE_FEN);
+    const { getByText } = render(<Chessboard boardSize={320} chess={chess} />);
+    expect(getByText("Checkmate")).toBeTruthy();
+    expect(getByText("Winner")).toBeTruthy();
+  });
+
+  test("playing into mate shows the badges, undo clears them", () => {
+    const ref = createRef<ChessboardRef>();
+    const { queryByText } = render(<Chessboard ref={ref} boardSize={320} />);
+
+    act(() => {
+      ref.current?.animateMove("f2", "f3");
+      ref.current?.animateMove("e7", "e5");
+      ref.current?.animateMove("g2", "g4");
+    });
+    expect(queryByText("Checkmate")).toBeNull();
+
+    act(() => {
+      ref.current?.animateMove("d8", "h4");
+    });
+    expect(queryByText("Checkmate")).toBeTruthy();
+    expect(queryByText("Winner")).toBeTruthy();
+
+    act(() => {
+      ref.current?.undo();
+    });
+    expect(queryByText("Checkmate")).toBeNull();
+    expect(queryByText("Winner")).toBeNull();
+  });
+
+  test("gameOverAnimationEnabled={false} suppresses the badges", () => {
+    const chess = new Chess(FOOLS_MATE_FEN);
+    const { queryByText } = render(
+      <Chessboard boardSize={320} chess={chess} gameOverAnimationEnabled={false} />
+    );
+    expect(queryByText("Checkmate")).toBeNull();
+    expect(queryByText("Winner")).toBeNull();
+  });
+
+  test("stalemate position shows a Stalemate badge on both kings", () => {
+    // Black to move, king on h8 has no legal moves and is not in check.
+    const chess = new Chess("7k/5Q2/6K1/8/8/8/8/8 b - - 0 1");
+    const { getAllByText, queryByText } = render(
+      <Chessboard boardSize={320} chess={chess} />
+    );
+    expect(getAllByText("Stalemate")).toHaveLength(2);
+    expect(queryByText("Winner")).toBeNull();
+  });
+
+  test("insufficient material shows a Draw badge on both kings", () => {
+    const chess = new Chess("8/8/8/8/8/8/8/K6k w - - 0 1");
+    const { getAllByText } = render(
+      <Chessboard boardSize={320} chess={chess} />
+    );
+    expect(getAllByText("Draw")).toHaveLength(2);
+  });
+
+  test("gameResult prop renders resign badges on a non-terminal position", () => {
+    const { getByText } = render(
+      <Chessboard
+        boardSize={320}
+        gameResult={{ reason: "resign", winner: "w" }}
+      />
+    );
+    expect(getByText("Resigned")).toBeTruthy();
+    expect(getByText("Winner")).toBeTruthy();
+  });
+
+  test("gameResult prop supports timeout and abandon", () => {
+    const timeout = render(
+      <Chessboard
+        boardSize={320}
+        gameResult={{ reason: "timeout", winner: "b" }}
+      />
+    );
+    expect(timeout.getByText("Timeout")).toBeTruthy();
+    expect(timeout.getByText("Winner")).toBeTruthy();
+
+    const abandon = render(
+      <Chessboard
+        boardSize={320}
+        gameResult={{ reason: "abandon", winner: "w" }}
+      />
+    );
+    expect(abandon.getByText("Abandoned")).toBeTruthy();
+  });
+
+  test("gameResult={null} suppresses the auto-detected checkmate badges", () => {
+    const chess = new Chess(FOOLS_MATE_FEN);
+    const { queryByText } = render(
+      <Chessboard boardSize={320} chess={chess} gameResult={null} />
+    );
+    expect(queryByText("Checkmate")).toBeNull();
+    expect(queryByText("Winner")).toBeNull();
+  });
+
+  test("a decisive gameResult without a winner renders nothing", () => {
+    // The layer warns about the missing winner in dev builds — expected.
+    const warnSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      const { queryByText } = render(
+        <Chessboard boardSize={320} gameResult={{ reason: "resign" }} />
+      );
+      expect(queryByText("Resigned")).toBeNull();
+      expect(queryByText("Winner")).toBeNull();
+      expect(warnSpy).toHaveBeenCalled();
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  test("gameOverLabels overrides the pill text", () => {
+    const chess = new Chess(FOOLS_MATE_FEN);
+    const { getByText, queryByText } = render(
+      <Chessboard
+        boardSize={320}
+        chess={chess}
+        gameOverLabels={{ checkmate: "Мат", winner: "Победа" }}
+      />
+    );
+    expect(getByText("Мат")).toBeTruthy();
+    expect(getByText("Победа")).toBeTruthy();
+    expect(queryByText("Checkmate")).toBeNull();
   });
 });
 

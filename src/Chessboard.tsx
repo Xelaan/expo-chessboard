@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { View } from "react-native";
+import { Image, View } from "react-native";
 import { useSharedValue } from "react-native-reanimated";
 import { Chess, type Move, type PieceSymbol } from "chess.ts";
 import {
@@ -14,6 +14,7 @@ import {
   type BoardColors,
   type ChessboardProps,
   type ChessboardRef,
+  type GameResult,
   type PieceType,
   type Player,
   type Square,
@@ -34,6 +35,7 @@ import GestureLayer from "./components/gesture-layer";
 import PromotionDialog from "./components/promotion-dialog";
 import ArrowsLayer from "./components/arrows-layer";
 import ExternalHighlights from "./components/external-highlights";
+import GameOverLayer from "./components/game-over-layer";
 
 /**
  * Build a hypothetical "opponent already moved, my turn" FEN by flipping
@@ -60,6 +62,7 @@ const Chessboard = React.forwardRef<ChessboardRef, ChessboardProps>(
       boardOrientation = "white",
       playerSide = "both",
       colors: colorOverrides,
+      backgroundImage,
       pieces,
       renderPiece,
       showCoordinates = true,
@@ -71,6 +74,9 @@ const Chessboard = React.forwardRef<ChessboardRef, ChessboardProps>(
       soundEnabled = true,
       hapticsEnabled = true,
       premovesEnabled = false,
+      gameOverAnimationEnabled = true,
+      gameOverLabels,
+      gameResult,
       onMove,
       onSquarePress,
     },
@@ -159,6 +165,14 @@ const Chessboard = React.forwardRef<ChessboardRef, ChessboardProps>(
       color: Player;
     } | null>(null);
 
+    // Auto-detected game result (React state — mounts/unmounts the
+    // GameOverLayer, which needs a render pass). Derived purely from
+    // the position inside syncFromChess, so undo/reset/goToMoveIndex
+    // clear it and scrubbing back to the end replays it. Endings that
+    // aren't in the position (resign, timeout, abandon) come from the
+    // `gameResult` prop instead, which overrides this when set.
+    const [autoResult, setAutoResult] = useState<GameResult | null>(null);
+
     // Queued premove. Cleared when applied, when illegal, or via
     // cancelPremove()/the deselect-tap branch.
     const [premove, setPremove] = useState<{
@@ -208,6 +222,20 @@ const Chessboard = React.forwardRef<ChessboardRef, ChessboardProps>(
       kingInCheck.value = chess.inCheck()
         ? findKingSquare(chess, chess.turn())
         : null;
+
+      if (chess.inCheckmate()) {
+        setAutoResult({
+          reason: "checkmate",
+          winner: chess.turn() === "w" ? "b" : "w",
+        });
+      } else if (chess.inStalemate()) {
+        setAutoResult({ reason: "stalemate" });
+      } else if (chess.inDraw()) {
+        // Insufficient material, 50-move rule, or threefold repetition.
+        setAutoResult({ reason: "draw" });
+      } else {
+        setAutoResult(null);
+      }
 
       // Premove legal map: only meaningful while it's the opponent's
       // turn AND premoves are enabled. Built from a temporary Chess
@@ -357,7 +385,7 @@ const Chessboard = React.forwardRef<ChessboardRef, ChessboardProps>(
     }, []);
 
     // Premove promotions default to queen — popping a promotion dialog
-    // mid-opponent-turn is awkward and chess.com / lichess do the same.
+    // mid-opponent-turn is awkward and major chess UIs do the same.
     const handlePremovePromotionRequest = useCallback(
       (from: string, to: string) => {
         setPremove({ from, to, promotion: "q" as PieceSymbol });
@@ -580,9 +608,40 @@ const Chessboard = React.forwardRef<ChessboardRef, ChessboardProps>(
       ? handlePremovePromotionRequest
       : handlePromotionRequest;
 
+    // ── Game-over layer inputs ──────────────────────────────────────────
+    // King squares come from the renderable piece map (already React
+    // state, already updated on every sync) rather than another
+    // findKingSquare pass — resign/timeout/abandon results need them
+    // even when the position itself isn't terminal.
+    const kingSquares = useMemo(() => {
+      let w: string | null = null;
+      let b: string | null = null;
+      for (const [sq, piece] of Object.entries(pieceMapState)) {
+        if (piece === "wk") w = sq;
+        else if (piece === "bk") b = sq;
+      }
+      return { w, b };
+    }, [pieceMapState]);
+
+    // `undefined` = auto-detect from the position; an object or `null`
+    // from the consumer wins over auto-detection.
+    const effectiveGameResult: GameResult | null =
+      gameResult === undefined ? autoResult : gameResult;
+
     // ── Render ──────────────────────────────────────────────────────────
     return (
       <View style={{ width: boardSize, height: boardSize }}>
+        {backgroundImage && (
+          <Image
+            source={backgroundImage}
+            resizeMode="cover"
+            style={{
+              position: "absolute",
+              width: boardSize,
+              height: boardSize,
+            }}
+          />
+        )}
         <BoardBackground
           boardSize={boardSize}
           colors={colors}
@@ -669,6 +728,18 @@ const Chessboard = React.forwardRef<ChessboardRef, ChessboardProps>(
           legalMovesMap={activeLegalMap}
           pieceMap={pieceMap}
         />
+        {gameOverAnimationEnabled && effectiveGameResult && (
+          <GameOverLayer
+            boardSize={boardSize}
+            flipped={flipped}
+            colors={colors}
+            result={effectiveGameResult}
+            whiteKingSquare={kingSquares.w}
+            blackKingSquare={kingSquares.b}
+            startDelay={animationDuration + 100}
+            labels={gameOverLabels}
+          />
+        )}
         <GestureLayer
           boardSize={boardSize}
           flipped={flipped}

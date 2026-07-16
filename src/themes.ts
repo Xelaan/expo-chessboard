@@ -27,9 +27,12 @@ export const THEME_WOOD: BoardColors = {
   coordinateLight: "#b58863",
   coordinateDark: "#f0d9b5",
   premove: "rgba(231, 76, 60, 0.7)",
+  gameOverLoser: "#fa412d",
+  gameOverWinner: "#81b64c",
+  gameOverDraw: "#8b8987",
 };
 
-/** chess.com-style blue. */
+/** Cool slate blue. */
 export const THEME_BLUE: BoardColors = {
   light: "#dee3e6",
   dark: "#8ca2ad",
@@ -43,6 +46,9 @@ export const THEME_BLUE: BoardColors = {
   coordinateLight: "#8ca2ad",
   coordinateDark: "#dee3e6",
   premove: "rgba(231, 76, 60, 0.7)",
+  gameOverLoser: "#fa412d",
+  gameOverWinner: "#81b64c",
+  gameOverDraw: "#8b8987",
 };
 
 /** lichess-style green — same family as THEME_DEFAULT but tuned warmer. */
@@ -59,4 +65,7 @@ export const THEME_GREEN: BoardColors = {
   coordinateLight: "#769656",
   coordinateDark: "#eeeed2",
   premove: "rgba(231, 76, 60, 0.7)",
+  gameOverLoser: "#fa412d",
+  gameOverWinner: "#81b64c",
+  gameOverDraw: "#8b8987",
 };

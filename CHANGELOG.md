@@ -3,6 +3,40 @@
 All notable changes to `@crewbeat/expo-chessboard` are documented here.
 This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.2.0 — Game-over animations, board textures, worklets packaging fix
+
+### Fixed
+
+- **Worklets version-mismatch crash.** `dist/` no longer ships pre-compiled
+  worklets (reverts the 0.1.2 build change). Baked worklets embed the Babel
+  plugin's serialization format, which must match the consumer app's
+  `react-native-worklets` runtime — apps on any other version crashed with
+  "Mismatch between JavaScript code version and Worklets Babel plugin
+  version". The library now ships inert `"worklet"` directives and lets the
+  app's own Babel plugin compile them (Metro processes `node_modules`), the
+  same packaging as gesture-handler and moti. The read-only-board bug that
+  motivated 0.1.2 was actually the gesture-layer absolute-fill collapse,
+  fixed separately in 0.1.3.
+
+### Added
+
+- **Game-over animation.** Animated king-cell badges when the game ends:
+  the overlay pops over the king's square with a label pill, holds, then
+  settles into a persistent corner badge. Checkmate (fallen king + crown
+  for the winner), stalemate and draws (½ on both kings) are auto-detected
+  from the position; resign (flag), timeout (clock), and abandon (✕) are
+  declared via the new `gameResult` prop. New props
+  `gameOverAnimationEnabled`, `gameOverLabels`, `gameResult`; new colors
+  `gameOverLoser`, `gameOverWinner`, `gameOverDraw`; new exported types
+  `GameResult`, `GameOverReason`, `GameOverLabels`. Overlays render above
+  the pieces with a semi-transparent cell fill, and settle into opaque
+  corner badges.
+
+- **Board background image.** New `backgroundImage` prop renders an
+  image (wood grain, marble, …) underneath the board cells, stretched to
+  cover the board. Pair it with rgba `colors.light` / `colors.dark` so
+  the texture shows through.
+
 ## 0.1.2 — Pre-compiled worklets (bug fix)
 
 Fixes boards rendering **read-only** in consumer apps. The previous build

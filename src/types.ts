@@ -23,6 +23,32 @@ export type BoardOrientation = "white" | "black";
  */
 export type PlayerSide = "white" | "black" | "both";
 
+/** How a game ended. Drives which badge/pill combination is rendered. */
+export type GameOverReason =
+  | "checkmate"
+  | "stalemate"
+  | "draw"
+  | "resign"
+  | "timeout"
+  | "abandon";
+
+/**
+ * A game result for the game-over animation. Decisive reasons
+ * ("checkmate", "resign", "timeout", "abandon") put the reason badge on
+ * the losing king and a winner badge on the other, so they require
+ * `winner`. "stalemate" and "draw" put a ½ badge on both kings and
+ * ignore `winner`.
+ */
+export interface GameResult {
+  reason: GameOverReason;
+  winner?: Player | null;
+}
+
+/** Pill-label overrides for the game-over animation (e.g. localization). */
+export type GameOverLabels = Partial<
+  Record<GameOverReason | "winner", string>
+>;
+
 export interface BoardColors {
   light: string;
   dark: string;
@@ -41,6 +67,12 @@ export interface BoardColors {
   coordinateDark: string;
   /** Tint used for the queued-premove ring + arrow. */
   premove: string;
+  /** Overlay/pill/badge color for the losing king in the game-over animation. */
+  gameOverLoser: string;
+  /** Overlay/badge color for the winning king in the game-over animation. */
+  gameOverWinner: string;
+  /** Overlay/badge color for both kings when the game is drawn (incl. stalemate). */
+  gameOverDraw: string;
 }
 
 export const DEFAULT_COLORS: BoardColors = {
@@ -56,6 +88,9 @@ export const DEFAULT_COLORS: BoardColors = {
   coordinateLight: "#779952",
   coordinateDark: "#edeed1",
   premove: "rgba(231, 76, 60, 0.7)",
+  gameOverLoser: "#fa412d",
+  gameOverWinner: "#81b64c",
+  gameOverDraw: "#8b8987",
 };
 
 /**
@@ -105,6 +140,14 @@ export interface ChessboardProps {
   playerSide?: PlayerSide;
   colors?: Partial<BoardColors>;
   /**
+   * Image rendered underneath the board cells (wood grain, marble,
+   * etc.), stretched to cover the whole board. The cells paint on top
+   * of it, so give `colors.light` / `colors.dark` alpha (rgba) values
+   * to let the texture show through — with fully opaque cell colors
+   * the image stays invisible.
+   */
+  backgroundImage?: ImageSourcePropType;
+  /**
    * Per-piece overrides for the default piece images. Any pieces not
    * listed fall back to `DEFAULT_PIECES`.
    */
@@ -134,6 +177,24 @@ export interface ChessboardProps {
    * — they're a no-op in analysis mode (`playerSide: "both"`).
    */
   premovesEnabled?: boolean;
+  /**
+   * Animate game-over badges over the kings when the game ends
+   * (checkmate, stalemate, draw, resign, timeout, abandon). The
+   * overlays pop over the king cells, then settle into small corner
+   * badges that persist until the position (or `gameResult`) changes.
+   * Default: true.
+   */
+  gameOverAnimationEnabled?: boolean;
+  /** Override the game-over pill labels (e.g. for localization). */
+  gameOverLabels?: GameOverLabels;
+  /**
+   * Externally-declared game result, for endings the board cannot
+   * derive from the position — resign, timeout, abandon — or to
+   * override the auto-detected one. `undefined` (default) auto-detects
+   * checkmate, stalemate, and drawn positions; `null` suppresses the
+   * game-over animation entirely.
+   */
+  gameResult?: GameResult | null;
   onMove?: (move: Move) => void;
   /**
    * Fires on any tap that does not result in a move or piece selection.

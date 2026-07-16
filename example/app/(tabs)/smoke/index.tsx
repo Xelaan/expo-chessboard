@@ -5,6 +5,7 @@ import {
   THEME_GREEN,
   THEME_WOOD,
   type ChessboardRef,
+  type GameResult,
   type PieceType,
   type Square,
 } from "@og-nav/expo-chessboard";
@@ -375,6 +376,60 @@ function UndoPromotionSlot({ size, onReset }: { size: number; onReset: () => voi
   );
 }
 
+/**
+ * Card 48 — consumer-declared game results via the `gameResult` prop.
+ * Resign/timeout/abandon can't be derived from the position, so the
+ * consumer declares them; this slot cycles through all of them on a
+ * mid-game position. BoardSlot pattern because the result lives in
+ * local state that changes after mount.
+ */
+const GAME_RESULTS: Array<[string, GameResult]> = [
+  ["Resign", { reason: "resign", winner: "w" }],
+  ["Timeout", { reason: "timeout", winner: "b" }],
+  ["Abandon", { reason: "abandon", winner: "w" }],
+  ["Draw", { reason: "draw" }],
+];
+function GameResultSlot({ size }: { size: number; onReset: () => void }) {
+  const [chess] = useState(
+    () =>
+      new Chess(
+        "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 6 5"
+      )
+  );
+  const [result, setResult] = useState<GameResult | null>(null);
+  return (
+    <>
+      <View style={styles.boardWrap}>
+        <Chessboard chess={chess} boardSize={size} gameResult={result} />
+      </View>
+      <View style={styles.controls}>
+        {GAME_RESULTS.map(([label, r]) => (
+          <Pressable
+            key={label}
+            onPress={() => setResult(r)}
+            style={({ pressed }) => [
+              styles.controlButton,
+              pressed && { opacity: 0.7 },
+            ]}
+          >
+            <Text style={styles.controlButtonText}>{label}</Text>
+          </Pressable>
+        ))}
+        <Pressable
+          onPress={() => setResult(null)}
+          style={({ pressed }) => [
+            styles.controlButton,
+            styles.resetButton,
+            pressed && { opacity: 0.7 },
+          ]}
+        >
+          <Text style={styles.controlButtonText}>Clear</Text>
+        </Pressable>
+      </View>
+    </>
+  );
+}
+
 // Unicode chess glyphs. iOS renders them with Apple Color Emoji, which
 // looks reasonable; Android renders them with whatever's installed,
 // which is fine for a demo.
@@ -669,7 +724,7 @@ const SMOKE_CARDS: SmokeCardProps[] = [
     number: 30,
     title: "Stalemate sound",
     expected:
-      "Drag c6 → c7. Black has no legal moves but is NOT in check — stalemate. The game-over sound plays (same as checkmate, different from move/capture). Bug we're guarding against: stalemate firing the move sound instead.",
+      "Drag c6 → c7. Black has no legal moves but is NOT in check — stalemate. The game-over sound plays (same as checkmate, different from move/capture), and gray 'Stalemate' ½ badges animate over BOTH kings. Bug we're guarding against: stalemate firing the move sound instead.",
     fen: "k7/8/2Q5/8/8/8/8/1K6 w - - 0 1",
   },
   {
@@ -933,6 +988,55 @@ const SMOKE_CARDS: SmokeCardProps[] = [
     expected:
       "Tap 'Promote' — the e7 pawn slides to e8 and morphs into a queen. Then tap 'Undo' — the queen slides back to e7 and morphs BACK into a pawn (no pop). 'Redo' reverses it again. Tests reconciliation branch 3b visually.",
     BoardSlot: UndoPromotionSlot,
+  },
+  {
+    number: 47,
+    title: "Game-over animation (checkmate/winner)",
+    expected:
+      "Drag a1 → a8 (back-rank mate). A red 'Checkmate' overlay pops over the black king and a green 'Winner' overlay over the white king, then both settle into small corner badges that persist. Tap 'Undo' — badges disappear; 'Redo' replays the animation.",
+    fen: "6k1/5ppp/8/8/8/8/8/R6K w - - 0 1",
+    renderExtraControls: ({ ref }) => (
+      <>
+        <Pressable
+          onPress={() => ref.current?.undo()}
+          style={({ pressed }) => [
+            styles.controlButton,
+            pressed && { opacity: 0.7 },
+          ]}
+        >
+          <Text style={styles.controlButtonText}>Undo</Text>
+        </Pressable>
+        <Pressable
+          onPress={() => ref.current?.redo()}
+          style={({ pressed }) => [
+            styles.controlButton,
+            pressed && { opacity: 0.7 },
+          ]}
+        >
+          <Text style={styles.controlButtonText}>Redo</Text>
+        </Pressable>
+      </>
+    ),
+  },
+  {
+    number: 48,
+    title: "gameResult prop — resign / timeout / abandon / draw",
+    expected:
+      "Tap each button. Resign → red flag badge on the black king + green crown on white. Timeout → red clock on white + crown on black. Abandon → red ✕ + crown. Draw → gray ½ badges on BOTH kings. 'Clear' removes the badges. The position never changes — these results come from the gameResult prop, not the board.",
+    BoardSlot: GameResultSlot,
+  },
+  {
+    number: 49,
+    title: "backgroundImage — texture under the cells",
+    expected:
+      "The board renders over an image with translucent cell colors, so the texture shows through both light and dark squares. Pieces, highlights, and gestures work as normal on top.",
+    boardProps: {
+      backgroundImage: { uri: "https://picsum.photos/seed/boardwood/600" },
+      colors: {
+        light: "rgba(240, 217, 181, 0.55)",
+        dark: "rgba(120, 80, 50, 0.55)",
+      },
+    },
   },
 ];
 
