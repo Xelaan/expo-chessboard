@@ -3,6 +3,19 @@
 All notable changes to `@crewbeat/expo-chessboard` are documented here.
 This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.4.1 — Fix invisible game-over cell fill on React Native 0.85
+
+### Fixed
+
+- **Game-over cell fill not rendering.** The colored square/badge behind
+  each king's game-over glyph was sized with `StyleSheet.absoluteFillObject`
+  (inset-only, no width/height). Under React Native 0.85's Yoga
+  absolute-positioning errata, an inset-only absolute child inside the
+  flex-centered overlay collapses to zero size, so the fill vanished while
+  the (explicitly sized) glyph still showed — for every theme. The fill is
+  now pinned to the cell's `width`/`height`, so it renders across RN
+  versions. Worked on RN 0.81 (the example app), regressed on 0.85.
+
 ## 0.4.0 — Configurable game-over accent color
 
 ### Added

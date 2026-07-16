@@ -28,7 +28,10 @@ module.exports = {
       displayName: "expo",
       preset: "jest-expo",
       setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
-      testMatch: ["<rootDir>/__tests__/chessboard.test.tsx"],
+      testMatch: [
+        "<rootDir>/__tests__/chessboard.test.tsx",
+        "<rootDir>/__tests__/game-over-layer.test.tsx",
+      ],
       transformIgnorePatterns: [
         // pnpm puts react-native and friends under
         // node_modules/.pnpm/<hash>/node_modules/<pkg>, so we have to

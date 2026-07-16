@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text } from "react-native";
+import { Text } from "react-native";
 import Animated, {
   Easing,
   Extrapolation,
@@ -317,7 +317,20 @@ function KingBadge({
       >
         <Animated.View
           style={[
-            { ...StyleSheet.absoluteFillObject, backgroundColor: fillColor },
+            {
+              // Explicit size, not `absoluteFillObject`: an inset-only
+              // absolute child inside this flex-centered parent resolves to
+              // zero size under React Native 0.85's Yoga absolute-positioning
+              // errata (the cell fill then vanishes while the glyph, which is
+              // explicitly sized, still shows). Pinning width/height to the
+              // cell keeps the fill visible across RN versions.
+              position: "absolute",
+              left: 0,
+              top: 0,
+              width: pieceSize,
+              height: pieceSize,
+              backgroundColor: fillColor,
+            },
             fillStyle,
           ]}
         />
