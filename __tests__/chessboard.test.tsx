@@ -446,6 +446,31 @@ describe("Chessboard game-over animation", () => {
     }
   });
 
+  test("game-over cell colors come from the colors prop", () => {
+    const chess = new Chess(FOOLS_MATE_FEN);
+    const tree = render(
+      <Chessboard
+        boardSize={320}
+        chess={chess}
+        colors={{
+          gameOverLoser: "#101010",
+          gameOverWinner: "#202020",
+          gameOverAccent: "#303030",
+        }}
+      />
+    );
+    const rendered = JSON.stringify(tree.toJSON());
+    expect(rendered).toContain('"backgroundColor":"#101010"');
+    expect(rendered).toContain('"backgroundColor":"#202020"');
+    // Accent drives the winner pill background (and glyphs/pill text).
+    expect(rendered).toContain('"backgroundColor":"#303030"');
+    expect(rendered).toContain('"color":"#303030"');
+    // The defaults must NOT appear once overridden.
+    expect(rendered).not.toContain("#fa412d");
+    expect(rendered).not.toContain("#81b64c");
+    expect(rendered).not.toContain("#ffffff");
+  });
+
   test("gameOverLabels overrides the pill text", () => {
     const chess = new Chess(FOOLS_MATE_FEN);
     const { getByText, queryByText } = render(

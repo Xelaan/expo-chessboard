@@ -321,7 +321,11 @@ function KingBadge({
             fillStyle,
           ]}
         />
-        <BadgeGlyph variant={variant} size={iconSize} color="#ffffff" />
+        <BadgeGlyph
+          variant={variant}
+          size={iconSize}
+          color={colors.gameOverAccent}
+        />
       </Animated.View>
       <Animated.View
         pointerEvents="none"
@@ -334,7 +338,8 @@ function KingBadge({
             height: pillHeight,
             borderRadius: pillHeight / 2,
             paddingHorizontal: pieceSize * 0.24,
-            backgroundColor: variant === "winner" ? "#ffffff" : fillColor,
+            backgroundColor:
+              variant === "winner" ? colors.gameOverAccent : fillColor,
             alignItems: "center",
             justifyContent: "center",
             shadowColor: "#000",
@@ -350,7 +355,10 @@ function KingBadge({
         <Text
           numberOfLines={1}
           style={{
-            color: variant === "winner" ? colors.gameOverWinner : "#ffffff",
+            color:
+              variant === "winner"
+                ? colors.gameOverWinner
+                : colors.gameOverAccent,
             fontWeight: "700",
             fontSize: Math.max(10, pieceSize * 0.26),
           }}

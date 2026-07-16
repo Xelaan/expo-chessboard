@@ -3,6 +3,16 @@
 All notable changes to `@crewbeat/expo-chessboard` are documented here.
 This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.4.0 — Configurable game-over accent color
+
+### Added
+
+- **`colors.gameOverAccent`** (default `#ffffff`) replaces the hardcoded
+  whites in the game-over animation: badge glyphs (crown, fallen king,
+  flag, clock, ✕, ½), the label text on colored pills, and the winner
+  pill's background. Together with `gameOverLoser` / `gameOverWinner` /
+  `gameOverDraw`, every color in the animation is now themeable.
+
 ## 0.3.0 — Board frame
 
 ### Added

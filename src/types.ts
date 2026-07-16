@@ -74,6 +74,13 @@ export interface BoardColors {
   /** Overlay/badge color for both kings when the game is drawn (incl. stalemate). */
   gameOverDraw: string;
   /**
+   * The game-over animation's accent color: badge glyphs (crown, fallen
+   * king, flag, clock, ✕, ½), the label text on colored pills, and the
+   * winner pill's background. Keep it high-contrast against the three
+   * gameOver* fills.
+   */
+  gameOverAccent: string;
+  /**
    * Fill of the frame between the board edge and the cells when
    * `boardPadding` > 0. Semi-transparent by default so a
    * `backgroundImage` shows through it.
@@ -97,6 +104,7 @@ export const DEFAULT_COLORS: BoardColors = {
   gameOverLoser: "#fa412d",
   gameOverWinner: "#81b64c",
   gameOverDraw: "#8b8987",
+  gameOverAccent: "#ffffff",
   boardBorder: "rgba(119, 153, 82, 0.75)",
 };
 
