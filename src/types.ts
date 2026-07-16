@@ -73,6 +73,12 @@ export interface BoardColors {
   gameOverWinner: string;
   /** Overlay/badge color for both kings when the game is drawn (incl. stalemate). */
   gameOverDraw: string;
+  /**
+   * Fill of the frame between the board edge and the cells when
+   * `boardPadding` > 0. Semi-transparent by default so a
+   * `backgroundImage` shows through it.
+   */
+  boardBorder: string;
 }
 
 export const DEFAULT_COLORS: BoardColors = {
@@ -91,6 +97,7 @@ export const DEFAULT_COLORS: BoardColors = {
   gameOverLoser: "#fa412d",
   gameOverWinner: "#81b64c",
   gameOverDraw: "#8b8987",
+  boardBorder: "rgba(119, 153, 82, 0.75)",
 };
 
 /**
@@ -147,6 +154,14 @@ export interface ChessboardProps {
    * the image stays invisible.
    */
   backgroundImage?: ImageSourcePropType;
+  /**
+   * Width (px) of a frame between the board edge and the cells. The
+   * component footprint stays `boardSize`; the 8×8 grid shrinks to
+   * fit inside. The frame is painted with `colors.boardBorder`
+   * (semi-transparent dark by default), and a `backgroundImage`
+   * extends behind it. Default: 0 (no frame).
+   */
+  boardPadding?: number;
   /**
    * Per-piece overrides for the default piece images. Any pieces not
    * listed fall back to `DEFAULT_PIECES`.

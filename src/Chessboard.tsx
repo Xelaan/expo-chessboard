@@ -63,6 +63,7 @@ const Chessboard = React.forwardRef<ChessboardRef, ChessboardProps>(
       playerSide = "both",
       colors: colorOverrides,
       backgroundImage,
+      boardPadding = 0,
       pieces,
       renderPiece,
       showCoordinates = true,
@@ -629,6 +630,16 @@ const Chessboard = React.forwardRef<ChessboardRef, ChessboardProps>(
       gameResult === undefined ? autoResult : gameResult;
 
     // ── Render ──────────────────────────────────────────────────────────
+    // boardPadding insets the 8×8 grid from the board edges; the
+    // component footprint stays boardSize. Every layer lives inside the
+    // grid container and sees gridSize as its board size, so square
+    // math and gesture coordinates need no offset handling. The frame
+    // itself is a border-only view (its interior stays transparent, so
+    // translucent cells composite over the backgroundImage, not over
+    // the frame color).
+    const pad = Math.max(0, Math.min(boardPadding, boardSize / 4));
+    const gridSize = boardSize - pad * 2;
+
     return (
       <View style={{ width: boardSize, height: boardSize }}>
         {backgroundImage && (
@@ -642,130 +653,152 @@ const Chessboard = React.forwardRef<ChessboardRef, ChessboardProps>(
             }}
           />
         )}
-        <BoardBackground
-          boardSize={boardSize}
-          colors={colors}
-          flipped={flipped}
-          showCoordinates={showCoordinates}
-          coordinateStyle={coordinateStyle}
-        />
-        <HighlightLayer
-          boardSize={boardSize}
-          flipped={flipped}
-          colors={colors}
-          selectedSquare={selectedSquare}
-          lastMoveFrom={lastMoveFrom}
-          lastMoveTo={lastMoveTo}
-          kingInCheck={kingInCheck}
-        />
-        {highlightedSquares && highlightedSquares.length > 0 && (
-          <ExternalHighlights
-            boardSize={boardSize}
-            flipped={flipped}
-            highlights={highlightedSquares}
-            colors={colors}
+        {pad > 0 && (
+          <View
+            pointerEvents="none"
+            style={{
+              position: "absolute",
+              width: boardSize,
+              height: boardSize,
+              borderWidth: pad,
+              borderColor: colors.boardBorder,
+            }}
           />
         )}
-        <PieceLayer
-          boardSize={boardSize}
-          flipped={flipped}
-          animationDuration={animationDuration}
-          pieceMap={pieceMapState}
-          syncVersion={syncVersion}
-          scaledSquare={scaledSquare}
-          draggingSquare={draggingSquare}
-          dragX={dragX}
-          dragY={dragY}
-          pieces={pieces}
-          renderPiece={renderPiece}
-        />
-        {arrows && arrows.length > 0 && (
-          <ArrowsLayer
-            boardSize={boardSize}
-            flipped={flipped}
-            arrows={arrows}
+        <View
+          style={{
+            position: "absolute",
+            left: pad,
+            top: pad,
+            width: gridSize,
+            height: gridSize,
+          }}
+        >
+          <BoardBackground
+            boardSize={gridSize}
             colors={colors}
+            flipped={flipped}
+            showCoordinates={showCoordinates}
+            coordinateStyle={coordinateStyle}
           />
-        )}
-        {premove && (
-          <>
+          <HighlightLayer
+            boardSize={gridSize}
+            flipped={flipped}
+            colors={colors}
+            selectedSquare={selectedSquare}
+            lastMoveFrom={lastMoveFrom}
+            lastMoveTo={lastMoveTo}
+            kingInCheck={kingInCheck}
+          />
+          {highlightedSquares && highlightedSquares.length > 0 && (
             <ExternalHighlights
-              boardSize={boardSize}
+              boardSize={gridSize}
               flipped={flipped}
-              highlights={[
-                {
-                  square: premove.from as Square,
-                  type: "ring",
-                  color: colors.premove,
-                },
-                {
-                  square: premove.to as Square,
-                  type: "ring",
-                  color: colors.premove,
-                },
-              ]}
+              highlights={highlightedSquares}
               colors={colors}
             />
-            <ArrowsLayer
-              boardSize={boardSize}
-              flipped={flipped}
-              arrows={[
-                {
-                  from: premove.from as Square,
-                  to: premove.to as Square,
-                  color: colors.premove,
-                },
-              ]}
-              colors={colors}
-            />
-          </>
-        )}
-        <LegalMoveDots
-          boardSize={boardSize}
-          flipped={flipped}
-          dotColor={colors.legalMoveDot}
-          selectedSquare={selectedSquare}
-          legalMovesMap={activeLegalMap}
-          pieceMap={pieceMap}
-        />
-        {gameOverAnimationEnabled && effectiveGameResult && (
-          <GameOverLayer
-            boardSize={boardSize}
+          )}
+          <PieceLayer
+            boardSize={gridSize}
             flipped={flipped}
-            colors={colors}
-            result={effectiveGameResult}
-            whiteKingSquare={kingSquares.w}
-            blackKingSquare={kingSquares.b}
-            startDelay={animationDuration + 100}
-            labels={gameOverLabels}
+            animationDuration={animationDuration}
+            pieceMap={pieceMapState}
+            syncVersion={syncVersion}
+            scaledSquare={scaledSquare}
+            draggingSquare={draggingSquare}
+            dragX={dragX}
+            dragY={dragY}
+            pieces={pieces}
+            renderPiece={renderPiece}
           />
-        )}
-        <GestureLayer
-          boardSize={boardSize}
-          flipped={flipped}
-          gestureEnabled={gestureEnabled && !promotionPending}
-          playerColor={gesturePlayerColor}
-          isPremoveMode={isPremoveMode}
-          legalMovesMap={activeLegalMap}
-          promotionsMap={activePromotionsMap}
-          pieceMap={pieceMap}
-          selectedSquare={selectedSquare}
-          scaledSquare={scaledSquare}
-          draggingSquare={draggingSquare}
-          dragX={dragX}
-          dragY={dragY}
-          onMoveRequest={activeMoveHandler}
-          onPromotionRequest={activePromotionHandler}
-          onSquarePress={handleSquarePress}
-        />
-        {promotionPending && (
-          <PromotionDialog
-            color={promotionPending.color}
-            boardSize={boardSize}
-            colors={colors}
-            onSelect={handlePromotionSelect}
+          {arrows && arrows.length > 0 && (
+            <ArrowsLayer
+              boardSize={gridSize}
+              flipped={flipped}
+              arrows={arrows}
+              colors={colors}
+            />
+          )}
+          {premove && (
+            <>
+              <ExternalHighlights
+                boardSize={gridSize}
+                flipped={flipped}
+                highlights={[
+                  {
+                    square: premove.from as Square,
+                    type: "ring",
+                    color: colors.premove,
+                  },
+                  {
+                    square: premove.to as Square,
+                    type: "ring",
+                    color: colors.premove,
+                  },
+                ]}
+                colors={colors}
+              />
+              <ArrowsLayer
+                boardSize={gridSize}
+                flipped={flipped}
+                arrows={[
+                  {
+                    from: premove.from as Square,
+                    to: premove.to as Square,
+                    color: colors.premove,
+                  },
+                ]}
+                colors={colors}
+              />
+            </>
+          )}
+          <LegalMoveDots
+            boardSize={gridSize}
+            flipped={flipped}
+            dotColor={colors.legalMoveDot}
+            selectedSquare={selectedSquare}
+            legalMovesMap={activeLegalMap}
+            pieceMap={pieceMap}
           />
-        )}
+          {gameOverAnimationEnabled && effectiveGameResult && (
+            <GameOverLayer
+              boardSize={gridSize}
+              flipped={flipped}
+              colors={colors}
+              result={effectiveGameResult}
+              whiteKingSquare={kingSquares.w}
+              blackKingSquare={kingSquares.b}
+              startDelay={animationDuration + 100}
+              labels={gameOverLabels}
+            />
+          )}
+          <GestureLayer
+            boardSize={gridSize}
+            flipped={flipped}
+            gestureEnabled={gestureEnabled && !promotionPending}
+            playerColor={gesturePlayerColor}
+            isPremoveMode={isPremoveMode}
+            legalMovesMap={activeLegalMap}
+            promotionsMap={activePromotionsMap}
+            pieceMap={pieceMap}
+            selectedSquare={selectedSquare}
+            scaledSquare={scaledSquare}
+            draggingSquare={draggingSquare}
+            dragX={dragX}
+            dragY={dragY}
+            onMoveRequest={activeMoveHandler}
+            onPromotionRequest={activePromotionHandler}
+            onSquarePress={handleSquarePress}
+          />
+          {promotionPending && (
+            <PromotionDialog
+              color={promotionPending.color}
+              boardSize={gridSize}
+              colors={colors}
+              onSelect={handlePromotionSelect}
+            />
+          )}
+        </View>
       </View>
     );
   }

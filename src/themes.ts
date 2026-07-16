@@ -30,6 +30,7 @@ export const THEME_WOOD: BoardColors = {
   gameOverLoser: "#fa412d",
   gameOverWinner: "#81b64c",
   gameOverDraw: "#8b8987",
+  boardBorder: "rgba(181, 136, 99, 0.75)",
 };
 
 /** Cool slate blue. */
@@ -49,6 +50,7 @@ export const THEME_BLUE: BoardColors = {
   gameOverLoser: "#fa412d",
   gameOverWinner: "#81b64c",
   gameOverDraw: "#8b8987",
+  boardBorder: "rgba(140, 162, 173, 0.75)",
 };
 
 /** lichess-style green — same family as THEME_DEFAULT but tuned warmer. */
@@ -68,4 +70,5 @@ export const THEME_GREEN: BoardColors = {
   gameOverLoser: "#fa412d",
   gameOverWinner: "#81b64c",
   gameOverDraw: "#8b8987",
+  boardBorder: "rgba(118, 150, 86, 0.75)",
 };

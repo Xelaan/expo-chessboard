@@ -3,6 +3,16 @@
 All notable changes to `@crewbeat/expo-chessboard` are documented here.
 This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.3.0 — Board frame
+
+### Added
+
+- **Board frame.** New `boardPadding` prop (default 0) insets the 8×8
+  grid from the board edges; the frame between them is painted with the
+  new `colors.boardBorder` (semi-transparent dark by default), and a
+  `backgroundImage` extends behind it. The component footprint stays
+  `boardSize`.
+
 ## 0.2.0 — Game-over animations, board textures, worklets packaging fix
 
 ### Fixed

@@ -42,6 +42,22 @@ describe("Chessboard mounting", () => {
     ).not.toThrow();
   });
 
+  test("renders with boardPadding and the ref API still works", () => {
+    const ref = createRef<ChessboardRef>();
+    render(
+      <Chessboard
+        ref={ref}
+        boardSize={320}
+        boardPadding={8}
+        backgroundImage={{ uri: "https://example.com/wood.png" }}
+      />
+    );
+    act(() => {
+      ref.current?.animateMove("e2", "e4");
+    });
+    expect(ref.current?.getFen()).toContain("/4P3/");
+  });
+
   test("renders with all custom props enabled", () => {
     expect(() =>
       render(

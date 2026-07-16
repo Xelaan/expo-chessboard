@@ -1027,14 +1027,16 @@ const SMOKE_CARDS: SmokeCardProps[] = [
   },
   {
     number: 49,
-    title: "backgroundImage — texture under the cells",
+    title: "backgroundImage + boardPadding — texture and frame",
     expected:
-      "The board renders over an image with translucent cell colors, so the texture shows through both light and dark squares. Pieces, highlights, and gestures work as normal on top.",
+      "The board renders over an image with translucent cell colors, so the texture shows through both light and dark squares. An 8px semi-transparent frame surrounds the cells with the image visible behind it. Pieces, highlights, and gestures work as normal on top.",
     boardProps: {
       backgroundImage: { uri: "https://picsum.photos/seed/boardwood/600" },
+      boardPadding: 8,
       colors: {
         light: "rgba(240, 217, 181, 0.55)",
         dark: "rgba(120, 80, 50, 0.55)",
+        boardBorder: "rgba(120, 80, 50, 0.7)",
       },
     },
   },

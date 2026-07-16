@@ -148,6 +148,24 @@ image stays invisible:
 />
 ```
 
+Pair it with `boardPadding` to inset the cells from the board edges:
+the frame between them is painted with `colors.boardBorder`
+(semi-transparent dark by default), and the background image extends
+behind it. The component footprint stays `boardSize` — the 8×8 grid
+shrinks to fit inside the frame.
+
+```tsx
+<Chessboard
+  boardSize={360}
+  boardPadding={8}
+  backgroundImage={require("./assets/wood.jpg")}
+  colors={{
+    light: "rgba(240, 217, 181, 0.55)",
+    dark: "rgba(181, 136, 99, 0.55)",
+  }}
+/>
+```
+
 ## Custom pieces
 
 Two ways to override the bundled PNG piece set:
@@ -302,6 +320,7 @@ pill text. Badge colors come from `colors.gameOverLoser`,
 | `playerSide` | `"white" \| "black" \| "both"` | `"both"` | Which side the local user can move. |
 | `colors` | `Partial<BoardColors>` | `DEFAULT_COLORS` | Palette overrides. Pass a theme constant or a partial object. |
 | `backgroundImage` | `ImageSourcePropType` | — | Image rendered under the board cells (textures). Use rgba cell colors to let it show through. |
+| `boardPadding` | `number` | `0` | Width of a frame between the board edge and the cells, painted with `colors.boardBorder`. The footprint stays `boardSize`; the grid shrinks. |
 | `pieces` | `Partial<Record<PieceType, ImageSourcePropType>>` | bundled PNGs | Per-piece image overrides. |
 | `renderPiece` | `(piece, size) => ReactElement \| null` | — | Full custom piece renderer. Overrides `pieces`. |
 | `showCoordinates` | `boolean` | `true` | Show file/rank labels in the corners. |
