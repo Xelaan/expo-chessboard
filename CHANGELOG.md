@@ -3,6 +3,23 @@
 All notable changes to `@crewbeat/expo-chessboard` are documented here.
 This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.5.0 — Configurable square marks + separate premove arrow color
+
+### Added
+
+- **`marks` prop — animated square badges.** Pass `SquareMark[]` to pin a
+  colored circle with a glyph over a square, drawn above the pieces and
+  popping in like the settled game-over badge. Each mark takes an `icon`
+  (`"cross"` | `"check"`, default `"cross"`), and optional `color` /
+  `accentColor` overrides — defaults are `gameOverLoser` (cross) /
+  `gameOverWinner` (check) with the `gameOverAccent` glyph. Built for puzzle
+  feedback (a red ✕ on a wrong move). New exports: `SquareMark`,
+  `SquareMarkIcon`.
+- **`colors.premoveArrow`.** The queued-premove arrow now has its own color,
+  separate from `colors.premove` (which still tints the origin/destination
+  rings). Defaults to the same value as `premove`, so existing themes are
+  unchanged.
+
 ## 0.4.1 — Fix invisible game-over cell fill on React Native 0.85
 
 ### Fixed

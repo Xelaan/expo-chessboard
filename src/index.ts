@@ -26,6 +26,8 @@ export type {
   PlayerSide,
   Square,
   SquareHighlight,
+  SquareMark,
+  SquareMarkIcon,
   Move,
   PieceSymbol,
   Chess,

@@ -36,6 +36,7 @@ import PromotionDialog from "./components/promotion-dialog";
 import ArrowsLayer from "./components/arrows-layer";
 import ExternalHighlights from "./components/external-highlights";
 import GameOverLayer from "./components/game-over-layer";
+import MarksLayer from "./components/marks-layer";
 
 /**
  * Build a hypothetical "opponent already moved, my turn" FEN by flipping
@@ -70,6 +71,7 @@ const Chessboard = React.forwardRef<ChessboardRef, ChessboardProps>(
       coordinateStyle,
       highlightedSquares,
       arrows,
+      marks,
       gestureEnabled = true,
       animationDuration = 150,
       soundEnabled = true,
@@ -745,7 +747,7 @@ const Chessboard = React.forwardRef<ChessboardRef, ChessboardProps>(
                   {
                     from: premove.from as Square,
                     to: premove.to as Square,
-                    color: colors.premove,
+                    color: colors.premoveArrow,
                   },
                 ]}
                 colors={colors}
@@ -770,6 +772,14 @@ const Chessboard = React.forwardRef<ChessboardRef, ChessboardProps>(
               blackKingSquare={kingSquares.b}
               startDelay={animationDuration + 100}
               labels={gameOverLabels}
+            />
+          )}
+          {marks && marks.length > 0 && (
+            <MarksLayer
+              boardSize={gridSize}
+              flipped={flipped}
+              marks={marks}
+              colors={colors}
             />
           )}
           <GestureLayer

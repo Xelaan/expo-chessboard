@@ -31,6 +31,7 @@ module.exports = {
       testMatch: [
         "<rootDir>/__tests__/chessboard.test.tsx",
         "<rootDir>/__tests__/game-over-layer.test.tsx",
+        "<rootDir>/__tests__/marks-layer.test.tsx",
       ],
       transformIgnorePatterns: [
         // pnpm puts react-native and friends under

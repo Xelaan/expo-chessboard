@@ -49,6 +49,28 @@ export type GameOverLabels = Partial<
   Record<GameOverReason | "winner", string>
 >;
 
+/** Glyph shown inside a {@link SquareMark} badge. */
+export type SquareMarkIcon = "cross" | "check";
+
+/**
+ * A configurable, animated badge pinned to a square — a colored circle with a
+ * glyph that pops in like the settled game-over badge. Handy for puzzle
+ * feedback (a red ✕ on a wrong move, a green ✓ on the right one). The badge
+ * persists while the mark is in the `marks` array and animates out when removed.
+ */
+export interface SquareMark {
+  square: Square;
+  /** Which glyph to render. Default: "cross". */
+  icon?: SquareMarkIcon;
+  /**
+   * Circle fill color. Defaults to `colors.gameOverWinner` for "check" and
+   * `colors.gameOverLoser` for "cross".
+   */
+  color?: string;
+  /** Glyph color. Defaults to `colors.gameOverAccent`. */
+  accentColor?: string;
+}
+
 export interface BoardColors {
   light: string;
   dark: string;
@@ -65,8 +87,10 @@ export interface BoardColors {
   coordinateLight: string;
   /** Coordinate label color on dark squares (uses light color by default). */
   coordinateDark: string;
-  /** Tint used for the queued-premove ring + arrow. */
+  /** Tint used for the queued-premove square rings (origin + destination). */
   premove: string;
+  /** Tint used for the queued-premove arrow. Defaults alongside `premove`. */
+  premoveArrow: string;
   /** Overlay/pill/badge color for the losing king in the game-over animation. */
   gameOverLoser: string;
   /** Overlay/badge color for the winning king in the game-over animation. */
@@ -101,6 +125,7 @@ export const DEFAULT_COLORS: BoardColors = {
   coordinateLight: "#779952",
   coordinateDark: "#edeed1",
   premove: "rgba(231, 76, 60, 0.7)",
+  premoveArrow: "rgba(231, 76, 60, 0.7)",
   gameOverLoser: "#fa412d",
   gameOverWinner: "#81b64c",
   gameOverDraw: "#8b8987",
@@ -188,6 +213,12 @@ export interface ChessboardProps {
   highlightedSquares?: SquareHighlight[];
   /** Read-only arrows drawn between the highlight layer and pieces. */
   arrows?: Arrow[];
+  /**
+   * Animated badges pinned to squares — a colored circle + glyph that pops in
+   * over the piece, drawn above the pieces. Useful for puzzle feedback (a red
+   * ✕ on a wrong move). Add/remove entries to show/hide them.
+   */
+  marks?: SquareMark[];
   gestureEnabled?: boolean;
   animationDuration?: number;
   soundEnabled?: boolean;
