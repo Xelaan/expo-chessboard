@@ -3,6 +3,16 @@
 All notable changes to `@crewbeat/expo-chessboard` are documented here.
 This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.5.1 — Square marks match the game-over badge
+
+### Changed
+
+- **`marks` now animate like the game-over badge.** A `SquareMark` pops as a
+  full-cell fill over the piece, holds, then settles into a small opaque circle
+  on the square's **top-right corner** — the same choreography and geometry as
+  the settled game-over badge (previously a smaller centered pop). Filled
+  check / cross glyphs match the game-over glyph style.
+
 ## 0.5.0 — Configurable square marks + separate premove arrow color
 
 ### Added

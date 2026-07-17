@@ -37,11 +37,9 @@ it("renders a round, cell-sized cross badge using the loser color by default", (
 
   const badges = badgesWithBackground(tree.toJSON(), DEFAULT_COLORS.gameOverLoser);
   expect(badges).toHaveLength(1);
-  const badge = badges[0];
-  // Round (borderRadius = radius) and a fraction of one square (320/8 = 40).
-  expect(badge.borderRadius).toBe((badge.width as number) / 2);
-  expect(badge.width).toBeGreaterThan(0);
-  expect(badge.width).toBeLessThan(40);
+  // The fill starts as a full cell (320 / 8 = 40) and animates into the corner
+  // circle — same as the game-over badge.
+  expect(badges[0].width).toBe(40);
 });
 
 it("uses the winner color for a check mark and honors a per-mark color override", () => {
