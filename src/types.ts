@@ -79,6 +79,10 @@ export interface BoardColors {
   selectedSquare: string;
   legalMoveDot: string;
   promotionPieceButton: string;
+  /** Background of the promotion dialog card. */
+  promotionDialogBackground: string;
+  /** Dimming backdrop behind the promotion dialog. */
+  promotionOverlay: string;
   /** Default arrow color when an Arrow doesn't override it. */
   arrow: string;
   /** Default external-highlight color when a SquareHighlight doesn't override it. */
@@ -120,6 +124,8 @@ export const DEFAULT_COLORS: BoardColors = {
   selectedSquare: "rgba(255, 255, 0, 0.5)",
   legalMoveDot: "rgba(0, 0, 0, 0.15)",
   promotionPieceButton: "#779952",
+  promotionDialogBackground: "#fff",
+  promotionOverlay: "rgba(0, 0, 0, 0.4)",
   arrow: "rgba(255, 170, 0, 0.85)",
   externalHighlight: "rgba(255, 170, 0, 0.6)",
   coordinateLight: "#779952",

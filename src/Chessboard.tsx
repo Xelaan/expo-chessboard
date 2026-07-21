@@ -805,6 +805,8 @@ const Chessboard = React.forwardRef<ChessboardRef, ChessboardProps>(
               color={promotionPending.color}
               boardSize={gridSize}
               colors={colors}
+              pieces={pieces}
+              renderPiece={renderPiece}
               onSelect={handlePromotionSelect}
             />
           )}
