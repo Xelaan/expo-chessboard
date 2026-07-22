@@ -8,7 +8,7 @@ import {
   type GameResult,
   type PieceType,
   type Square,
-} from "@og-nav/expo-chessboard";
+} from "@crewbeat/expo-chessboard";
 import { Chess } from "chess.ts";
 import { useRef, useState } from "react";
 import {
@@ -101,7 +101,7 @@ function SmokeHeader() {
       <Text style={styles.headerTitle}>Smoke list</Text>
       <Text style={styles.headerBody}>
         This screen is the manual test pass for{" "}
-        <Text style={styles.headerCode}>@og-nav/expo-chessboard</Text>. Each
+        <Text style={styles.headerCode}>@crewbeat/expo-chessboard</Text>. Each
         card is a self-contained example of one feature or one fixed bug.
         Scroll through, do the listed action, and the post-action board
         state IS the visual confirmation it works.

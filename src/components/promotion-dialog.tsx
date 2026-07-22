@@ -32,25 +32,32 @@ export default function PromotionDialog({
 }: Props) {
   const pieceSize = boardSize / 8;
   const dialogWidth = pieceSize * 4;
-  const dialogHeight = pieceSize;
   const pieceImageSize = pieceSize * 0.85;
 
   return (
     <View
       style={[
-        StyleSheet.absoluteFillObject,
         s.overlay,
-        { backgroundColor: colors.promotionOverlay },
+        {
+          // Explicit board-sized frame (not absoluteFillObject): some hosts
+          // resolve `bottom: 0` against the screen, not the board, which
+          // pushes the flex-centred dialog below the board.
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: boardSize,
+          height: boardSize,
+          backgroundColor: colors.promotionOverlay,
+        },
       ]}
     >
-      {/* Anchored to the board's centre explicitly, so the dialog stays put
-          regardless of how the overlay's frame resolves. */}
+      {/* Centred via flexbox on the overlay (not absolute top/left): stays on
+          the board regardless of how the overlay's frame resolves — some hosts
+          (New Arch / nested absolutes) don't give the overlay the board frame. */}
       <View
         style={[
           s.dialog,
           {
-            top: (boardSize - dialogHeight) / 2,
-            left: (boardSize - dialogWidth) / 2,
             width: dialogWidth,
             borderRadius: pieceSize * 0.2,
             backgroundColor: colors.promotionDialogBackground,
@@ -91,9 +98,10 @@ export default function PromotionDialog({
 const s = StyleSheet.create({
   overlay: {
     zIndex: 200,
+    alignItems: "center",
+    justifyContent: "center",
   },
   dialog: {
-    position: "absolute",
     flexDirection: "row",
     overflow: "hidden",
   },

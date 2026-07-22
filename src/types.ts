@@ -227,6 +227,8 @@ export interface ChessboardProps {
   marks?: SquareMark[];
   gestureEnabled?: boolean;
   animationDuration?: number;
+  /** Scale a piece grows to while it's picked up / dragged. Default `1.2`. */
+  dragScale?: number;
   soundEnabled?: boolean;
   hapticsEnabled?: boolean;
   /**

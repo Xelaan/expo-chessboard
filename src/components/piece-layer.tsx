@@ -31,6 +31,8 @@ interface Props {
   draggingSquare: SharedValue<string | null>;
   dragX: SharedValue<number>;
   dragY: SharedValue<number>;
+  /** Scale applied to a piece while it's picked up / dragged. */
+  dragScale: number;
   pieces?: Partial<Record<PieceType, ImageSourcePropType>>;
   renderPiece?: (
     piece: PieceType,
@@ -53,6 +55,7 @@ const AnimatedPiece = React.memo(function AnimatedPiece({
   draggingSquare,
   dragX,
   dragY,
+  dragScale,
   pieces,
   renderPiece,
 }: {
@@ -65,6 +68,7 @@ const AnimatedPiece = React.memo(function AnimatedPiece({
   draggingSquare: SharedValue<string | null>;
   dragX: SharedValue<number>;
   dragY: SharedValue<number>;
+  dragScale: number;
   pieces?: Partial<Record<PieceType, ImageSourcePropType>>;
   renderPiece?: (
     piece: PieceType,
@@ -98,7 +102,7 @@ const AnimatedPiece = React.memo(function AnimatedPiece({
       const isScaled = current === square;
       const wasScaled = previous === square;
       if (isScaled && !wasScaled) {
-        scale.value = withTiming(1.2);
+        scale.value = withTiming(dragScale);
       } else if (!isScaled && wasScaled) {
         scale.value = withTiming(1);
       }
@@ -179,6 +183,7 @@ export default function PieceLayer({
   draggingSquare,
   dragX,
   dragY,
+  dragScale,
   pieces,
   renderPiece,
 }: Props) {
@@ -209,6 +214,7 @@ export default function PieceLayer({
           draggingSquare={draggingSquare}
           dragX={dragX}
           dragY={dragY}
+          dragScale={dragScale}
           pieces={pieces}
           renderPiece={renderPiece}
         />

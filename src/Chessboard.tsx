@@ -74,6 +74,7 @@ const Chessboard = React.forwardRef<ChessboardRef, ChessboardProps>(
       marks,
       gestureEnabled = true,
       animationDuration = 150,
+      dragScale = 1.2,
       soundEnabled = true,
       hapticsEnabled = true,
       premovesEnabled = false,
@@ -136,6 +137,10 @@ const Chessboard = React.forwardRef<ChessboardRef, ChessboardProps>(
     );
     const promotionsMap = useSharedValue<Record<string, boolean>>(
       initialLegal.promotions
+    );
+    // King-onto-rook castling: "e1h1" -> the king's real destination "g1".
+    const castlesMap = useSharedValue<Record<string, string>>(
+      initialLegal.castles
     );
     // Premove maps mirror legal/promotions but are computed against a
     // hypothetical "swap turn" position so the user can drag their own
@@ -222,6 +227,7 @@ const Chessboard = React.forwardRef<ChessboardRef, ChessboardProps>(
       const legal = computeLegalMap(chess);
       legalMovesMap.value = legal.moves;
       promotionsMap.value = legal.promotions;
+      castlesMap.value = legal.castles;
       kingInCheck.value = chess.inCheck()
         ? findKingSquare(chess, chess.turn())
         : null;
@@ -292,6 +298,7 @@ const Chessboard = React.forwardRef<ChessboardRef, ChessboardProps>(
       pieceMap,
       legalMovesMap,
       promotionsMap,
+      castlesMap,
       premoveLegalMovesMap,
       premovePromotionsMap,
       kingInCheck,
@@ -329,10 +336,12 @@ const Chessboard = React.forwardRef<ChessboardRef, ChessboardProps>(
     // ── Move handling ───────────────────────────────────────────────────
     const executeMove = useCallback(
       (from: string, to: string, promotion?: string) => {
+        // Translate a king-onto-rook castling drop to the king's real square.
+        const target = castlesMap.value[`${from}${to}`] ?? to;
         try {
           const move = chess.move({
             from,
-            to,
+            to: target,
             promotion: promotion as PieceSymbol,
           });
           if (move) {
@@ -354,7 +363,7 @@ const Chessboard = React.forwardRef<ChessboardRef, ChessboardProps>(
           }
         }
       },
-      [chess, syncFromChess, sounds, onMove]
+      [chess, syncFromChess, sounds, onMove, castlesMap]
     );
 
     const handleMoveRequest = useCallback(
@@ -710,6 +719,7 @@ const Chessboard = React.forwardRef<ChessboardRef, ChessboardProps>(
             draggingSquare={draggingSquare}
             dragX={dragX}
             dragY={dragY}
+            dragScale={dragScale}
             pieces={pieces}
             renderPiece={renderPiece}
           />

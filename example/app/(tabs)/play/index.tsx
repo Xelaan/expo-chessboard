@@ -1,5 +1,5 @@
-import { Chessboard } from "@og-nav/expo-chessboard";
-import type { ChessboardRef } from "@og-nav/expo-chessboard";
+import { Chessboard } from "@crewbeat/expo-chessboard";
+import type { ChessboardRef } from "@crewbeat/expo-chessboard";
 import { Chess } from "chess.ts";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {

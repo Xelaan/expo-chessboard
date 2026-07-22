@@ -3,7 +3,7 @@ import {
   STARTING_FEN,
   type ChessboardProps,
   type ChessboardRef,
-} from "@og-nav/expo-chessboard";
+} from "@crewbeat/expo-chessboard";
 import { Chess } from "chess.ts";
 import {
   memo,

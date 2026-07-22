@@ -134,6 +134,22 @@ describe("computeLegalMap", () => {
     const { promotions } = computeLegalMap(chess);
     expect(promotions["e2e4"]).toBeUndefined();
   });
+
+  test("accepts a king-onto-rook drop and maps it to the real castle", () => {
+    const chess = new Chess("r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1");
+    const { moves, castles } = computeLegalMap(chess);
+    // The king can be dropped on either rook...
+    expect(moves.e1).toContain("h1");
+    expect(moves.e1).toContain("a1");
+    // ...and each maps to the king's actual castling destination.
+    expect(castles["e1h1"]).toBe("g1"); // O-O
+    expect(castles["e1a1"]).toBe("c1"); // O-O-O
+  });
+
+  test("has no castle targets when castling is unavailable", () => {
+    const { castles } = computeLegalMap(new Chess());
+    expect(Object.keys(castles)).toHaveLength(0);
+  });
 });
 
 describe("pieceSide", () => {

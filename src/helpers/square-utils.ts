@@ -83,9 +83,11 @@ export function findKingSquare(chess: Chess, color: Player): string | null {
 export function computeLegalMap(chess: Chess): {
   moves: Record<string, string[]>;
   promotions: Record<string, boolean>; // "e7e8" -> true
+  castles: Record<string, string>; // "e1h1" -> "g1" (king dropped on its rook)
 } {
   const moves: Record<string, string[]> = {};
   const promotions: Record<string, boolean> = {};
+  const castles: Record<string, string> = {};
   const allMoves = chess.moves({ verbose: true });
   for (const m of allMoves) {
     if (!moves[m.from]) moves[m.from] = [];
@@ -93,8 +95,16 @@ export function computeLegalMap(chess: Chess): {
     if (m.promotion) {
       promotions[`${m.from}${m.to}`] = true;
     }
+    // Castling: also accept dropping the king on its own rook's square (the
+    // common "slide king onto rook" gesture), mapping it to the king's real
+    // destination. `k`/`q` are the kingside/queenside castle move flags.
+    if (m.flags.includes("k") || m.flags.includes("q")) {
+      const rookSquare = `${m.flags.includes("k") ? "h" : "a"}${m.from[1]}`;
+      if (!moves[m.from].includes(rookSquare)) moves[m.from].push(rookSquare);
+      castles[`${m.from}${rookSquare}`] = m.to;
+    }
   }
-  return { moves, promotions };
+  return { moves, promotions, castles };
 }
 
 /**
