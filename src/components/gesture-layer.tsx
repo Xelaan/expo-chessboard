@@ -147,10 +147,12 @@ export default function GestureLayer({
       // useAnimatedStyle reads the new finger position immediately
       // instead of stale coordinates from a previous drag.
       dragX.value = e.x - pieceSize / 2;
+      // The lift is purely visual — it raises the rendered piece but never
+      // shifts which cell the gesture targets.
       dragY.value = e.y - pieceSize / 2 - liftY;
-      // Highlight the cell under the lifted piece — the same square the drop
-      // uses — so the hover affordance marks exactly where it would land.
-      hoverSquare.value = xyToSquare(e.x, e.y - liftY, pieceSize, flipped);
+      // Highlight the cell under the finger — the same square the drop uses —
+      // so the hover affordance marks exactly where it would land.
+      hoverSquare.value = xyToSquare(e.x, e.y, pieceSize, flipped);
       if (!draggingSquare.value) {
         draggingSquare.value = orig;
       }
@@ -161,10 +163,9 @@ export default function GestureLayer({
       hoverSquare.value = null;
       if (!from || !draggingSquare.value) return;
 
-      // Detect the drop target from the lifted position, so the piece lands
-      // on the square it visually hovers over rather than the one under the
-      // finger.
-      const toSq = xyToSquare(e.x, e.y - liftY, pieceSize, flipped);
+      // Drop target is the cell under the finger — the visual lift never
+      // moves it (matches the live hover highlight).
+      const toSq = xyToSquare(e.x, e.y, pieceSize, flipped);
       const targets = legalMovesMap.value[from];
       const isLegal = targets && targets.includes(toSq);
 
