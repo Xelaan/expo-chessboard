@@ -10,10 +10,9 @@ interface Props {
   colors: BoardColors;
   /** Cell the dragged piece currently hovers over (null when not dragging). */
   hoverSquare: SharedValue<string | null>;
+  /** Diameter of the surrounding disc, as a multiple of one square. */
+  ringScale: number;
 }
-
-// Diameter of the surrounding disc, as a multiple of one square.
-const RING_SCALE = 1.7;
 
 /**
  * Drag affordance drawn beneath the pieces: a fill on the hovered cell plus
@@ -27,9 +26,10 @@ const HoverLayer = React.memo(function HoverLayer({
   flipped,
   colors,
   hoverSquare,
+  ringScale,
 }: Props) {
   const pieceSize = boardSize / 8;
-  const ringSize = pieceSize * RING_SCALE;
+  const ringSize = pieceSize * ringScale;
   // Constant inset that centers the ring on the cell it sits over.
   const ringInset = (pieceSize - ringSize) / 2;
 

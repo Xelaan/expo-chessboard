@@ -251,6 +251,12 @@ export interface ChessboardProps {
    * `colors.hoverRing`. Default `true`.
    */
   dragHoverEnabled?: boolean;
+  /**
+   * Diameter of the drag-hover disc, as a multiple of one square (e.g.
+   * `1` fits a single cell, `2` spans two). Only relevant when
+   * `dragHoverEnabled`. Default `1.7`.
+   */
+  dragHoverRingScale?: number;
   soundEnabled?: boolean;
   hapticsEnabled?: boolean;
   /**

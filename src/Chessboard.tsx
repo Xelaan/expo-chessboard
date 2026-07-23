@@ -78,6 +78,7 @@ const Chessboard = React.forwardRef<ChessboardRef, ChessboardProps>(
       dragScale = 1.2,
       dragOffsetY = 0,
       dragHoverEnabled = true,
+      dragHoverRingScale = 1.7,
       soundEnabled = true,
       hapticsEnabled = true,
       premovesEnabled = false,
@@ -711,6 +712,7 @@ const Chessboard = React.forwardRef<ChessboardRef, ChessboardProps>(
               flipped={flipped}
               colors={colors}
               hoverSquare={hoverSquare}
+              ringScale={dragHoverRingScale}
             />
           )}
           {highlightedSquares && highlightedSquares.length > 0 && (
