@@ -229,6 +229,15 @@ export interface ChessboardProps {
   animationDuration?: number;
   /** Scale a piece grows to while it's picked up / dragged. Default `1.2`. */
   dragScale?: number;
+  /**
+   * Lift the dragged piece above the finger so it isn't hidden under it,
+   * as a fraction of one square's size (e.g. `0.75` lifts by three quarters
+   * of a cell). The lift shifts both the piece's rendered position and the
+   * drop-target detection, so the piece lands on the square it visually
+   * hovers over — not the one under the finger. Default `0` (piece centered
+   * on the finger, the classic behaviour).
+   */
+  dragOffsetY?: number;
   soundEnabled?: boolean;
   hapticsEnabled?: boolean;
   /**

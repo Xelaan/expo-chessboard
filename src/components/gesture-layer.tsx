@@ -23,6 +23,7 @@ interface Props {
   draggingSquare: SharedValue<string | null>;
   dragX: SharedValue<number>;
   dragY: SharedValue<number>;
+  dragOffsetY: number;
   onMoveRequest: (from: string, to: string) => void;
   onPromotionRequest: (from: string, to: string) => void;
   onSquarePress?: (square: Square) => void;
@@ -42,11 +43,15 @@ export default function GestureLayer({
   draggingSquare,
   dragX,
   dragY,
+  dragOffsetY,
   onMoveRequest,
   onPromotionRequest,
   onSquarePress,
 }: Props) {
   const pieceSize = boardSize / 8;
+  // Vertical lift applied to the dragged piece, in px. Expressed by callers
+  // as a fraction of a cell, so it scales with board size.
+  const liftY = pieceSize * dragOffsetY;
 
   // Track the square where the gesture began (for snap-back)
   const originSquare = useSharedValue<string | null>(null);
@@ -140,7 +145,7 @@ export default function GestureLayer({
       // useAnimatedStyle reads the new finger position immediately
       // instead of stale coordinates from a previous drag.
       dragX.value = e.x - pieceSize / 2;
-      dragY.value = e.y - pieceSize / 2;
+      dragY.value = e.y - pieceSize / 2 - liftY;
       if (!draggingSquare.value) {
         draggingSquare.value = orig;
       }
@@ -150,7 +155,10 @@ export default function GestureLayer({
       const from = originSquare.value;
       if (!from || !draggingSquare.value) return;
 
-      const toSq = xyToSquare(e.x, e.y, pieceSize, flipped);
+      // Detect the drop target from the lifted position, so the piece lands
+      // on the square it visually hovers over rather than the one under the
+      // finger.
+      const toSq = xyToSquare(e.x, e.y - liftY, pieceSize, flipped);
       const targets = legalMovesMap.value[from];
       const isLegal = targets && targets.includes(toSq);
 
