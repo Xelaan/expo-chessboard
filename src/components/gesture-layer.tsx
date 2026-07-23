@@ -21,6 +21,7 @@ interface Props {
   selectedSquare: SharedValue<string | null>;
   scaledSquare: SharedValue<string | null>;
   draggingSquare: SharedValue<string | null>;
+  hoverSquare: SharedValue<string | null>;
   dragX: SharedValue<number>;
   dragY: SharedValue<number>;
   dragOffsetY: number;
@@ -41,6 +42,7 @@ export default function GestureLayer({
   selectedSquare,
   scaledSquare,
   draggingSquare,
+  hoverSquare,
   dragX,
   dragY,
   dragOffsetY,
@@ -146,6 +148,9 @@ export default function GestureLayer({
       // instead of stale coordinates from a previous drag.
       dragX.value = e.x - pieceSize / 2;
       dragY.value = e.y - pieceSize / 2 - liftY;
+      // Highlight the cell under the lifted piece — the same square the drop
+      // uses — so the hover affordance marks exactly where it would land.
+      hoverSquare.value = xyToSquare(e.x, e.y - liftY, pieceSize, flipped);
       if (!draggingSquare.value) {
         draggingSquare.value = orig;
       }
@@ -153,6 +158,7 @@ export default function GestureLayer({
     .onEnd((e) => {
       "worklet";
       const from = originSquare.value;
+      hoverSquare.value = null;
       if (!from || !draggingSquare.value) return;
 
       // Detect the drop target from the lifted position, so the piece lands
@@ -193,6 +199,7 @@ export default function GestureLayer({
       "worklet";
       // Always shrink on release
       scaledSquare.value = null;
+      hoverSquare.value = null;
       // Ensure drag state is cleaned up
       if (draggingSquare.value) {
         const from = originSquare.value;

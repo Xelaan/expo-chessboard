@@ -29,6 +29,7 @@ import { useBoardSounds } from "./use-board-sounds";
 
 import BoardBackground from "./components/board-background";
 import HighlightLayer from "./components/highlight-layer";
+import HoverLayer from "./components/hover-layer";
 import PieceLayer from "./components/piece-layer";
 import LegalMoveDots from "./components/legal-move-dots";
 import GestureLayer from "./components/gesture-layer";
@@ -76,6 +77,7 @@ const Chessboard = React.forwardRef<ChessboardRef, ChessboardProps>(
       animationDuration = 150,
       dragScale = 1.2,
       dragOffsetY = 0,
+      dragHoverEnabled = true,
       soundEnabled = true,
       hapticsEnabled = true,
       premovesEnabled = false,
@@ -158,6 +160,7 @@ const Chessboard = React.forwardRef<ChessboardRef, ChessboardProps>(
 
     // Drag state
     const draggingSquare = useSharedValue<string | null>(null);
+    const hoverSquare = useSharedValue<string | null>(null);
     const dragX = useSharedValue(0);
     const dragY = useSharedValue(0);
 
@@ -702,6 +705,14 @@ const Chessboard = React.forwardRef<ChessboardRef, ChessboardProps>(
             lastMoveTo={lastMoveTo}
             kingInCheck={kingInCheck}
           />
+          {dragHoverEnabled && (
+            <HoverLayer
+              boardSize={gridSize}
+              flipped={flipped}
+              colors={colors}
+              hoverSquare={hoverSquare}
+            />
+          )}
           {highlightedSquares && highlightedSquares.length > 0 && (
             <ExternalHighlights
               boardSize={gridSize}
@@ -805,6 +816,7 @@ const Chessboard = React.forwardRef<ChessboardRef, ChessboardProps>(
             selectedSquare={selectedSquare}
             scaledSquare={scaledSquare}
             draggingSquare={draggingSquare}
+            hoverSquare={hoverSquare}
             dragX={dragX}
             dragY={dragY}
             dragOffsetY={dragOffsetY}

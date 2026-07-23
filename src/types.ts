@@ -77,6 +77,10 @@ export interface BoardColors {
   lastMoveHighlight: string;
   checkHighlight: string;
   selectedSquare: string;
+  /** Fill of the cell the dragged piece currently hovers over. */
+  hoverSquare: string;
+  /** Semi-transparent disc drawn around the hovered cell while dragging. */
+  hoverRing: string;
   legalMoveDot: string;
   promotionPieceButton: string;
   /** Background of the promotion dialog card. */
@@ -122,6 +126,8 @@ export const DEFAULT_COLORS: BoardColors = {
   lastMoveHighlight: "rgba(255, 255, 0, 0.4)",
   checkHighlight: "rgba(231, 76, 60, 0.55)",
   selectedSquare: "rgba(255, 255, 0, 0.5)",
+  hoverSquare: "rgba(255, 255, 255, 0.32)",
+  hoverRing: "rgba(255, 255, 255, 0.18)",
   legalMoveDot: "rgba(0, 0, 0, 0.15)",
   promotionPieceButton: "#779952",
   promotionDialogBackground: "#fff",
@@ -238,6 +244,13 @@ export interface ChessboardProps {
    * on the finger, the classic behaviour).
    */
   dragOffsetY?: number;
+  /**
+   * While a piece is being dragged, highlight the cell it hovers over
+   * (fill + a semi-transparent disc around it, à la chess.com) so the
+   * drop target is obvious. Colors come from `colors.hoverSquare` and
+   * `colors.hoverRing`. Default `true`.
+   */
+  dragHoverEnabled?: boolean;
   soundEnabled?: boolean;
   hapticsEnabled?: boolean;
   /**
