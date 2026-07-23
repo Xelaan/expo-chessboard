@@ -1,6 +1,6 @@
 {
   "name": "@crewbeat/expo-chessboard",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "Animated, customizable chessboard for React Native + Expo — drag-and-drop, premoves, move-history scrubbing, game-over animations, themes, and board textures",
   "main": "dist/index.js",
   "module": "dist/index.js",
